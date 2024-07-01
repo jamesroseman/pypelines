@@ -5,7 +5,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 from .config import load_config, get_pipeline_file_paths
-from .yaml_generator import generate_pipeline_yaml_files
+from .pipeline_yaml_generator import generate_pipeline_yaml_files
 
 console = Console()
 
