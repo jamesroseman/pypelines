@@ -1,0 +1,15 @@
+FROM apache/beam_python3.10_sdk:2.56.0
+
+ARG BEAM_VERSION
+ENV BEAM_VERSION=${BEAM_VERSION:-2.56.0}
+ENV REPO_BASE_URL=https://repo1.maven.org/maven2/org/apache/beam
+
+RUN apt-get update && apt-get install -y default-jdk
+
+# Copy the JavaIO expansion service JAR into image.
+COPY ../downloads/jar/beam-sdks-java-io-expansion-service.jar /opt/apache/beam/jars
+
+# Copy the codebase, including all pipelines.
+COPY word_len /app/word_len
+
+ENV PYTHONPATH="$PYTHONPATH:/app"

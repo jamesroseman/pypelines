@@ -1,0 +1,4 @@
+[tool.pypelines]
+files = [
+    "src/pipelines/"
+]
