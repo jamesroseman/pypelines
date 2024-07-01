@@ -1,3 +1,3 @@
 #!/bin/bash
 
-kubectl apply -f deployment/k8s/cert-manager.yaml
+kubectl apply -f pypelines/deployment/downloads/k8s/cert-manager.yaml

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOWNLOADS_PATH=deployment/downloads/k8s
+DOWNLOADS_PATH=pypelines/deployment/downloads/k8s
 
 # Uninstall the Flink operator, if it exists.
 if helm list | grep -q "^flink-kubernetes-operator"; then

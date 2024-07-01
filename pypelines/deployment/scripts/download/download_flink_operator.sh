@@ -1,7 +1,7 @@
 #!/bin/bash
 
 FLINK_VERSION="1.8.0"
-DOWNLOADS_PATH=deployment/downloads/k8s
+DOWNLOADS_PATH=pypelines/deployment/downloads/k8s
 LOCAL_FILEPATH=$DOWNLOADS_PATH/flink-operator-$FLINK_VERSION.tgz
 DOWNLOAD_URL=https://downloads.apache.org/flink/flink-kubernetes-operator-$FLINK_VERSION/flink-kubernetes-operator-$FLINK_VERSION-helm.tgz
 
