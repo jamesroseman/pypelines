@@ -1,2 +1,2 @@
-pypelines/deployment/downloads filter=lfs diff=lfs merge=lfs -text
+pypelines/deployment/downloads/ filter=lfs diff=lfs merge=lfs -text
 pypelines/deployment/downloads/** filter=lfs diff=lfs merge=lfs -text
