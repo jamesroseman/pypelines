@@ -1,56 +1,48 @@
-import logging
 import os
 import pkg_resources
-from typing import Any, List
-
-import jinja2
+import subprocess
 
 
-def load_template(template_file: str) -> jinja2.Template:
-    """Loads template YAML file."""
-    template_dir = pkg_resources.resource_filename(__name__, "../deployment/docker")
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
-    template = env.get_template(template_file)
-    return template
+def build_docker_image(dockerfile_path: str, name: str, build_context: str):
+    # Set the Docker environment to Minikube's Docker daemon
+    minikube_docker_env_command = ["minikube", "docker-env"]
+    result = subprocess.run(minikube_docker_env_command, capture_output=True, text=True, check=True)
+
+    # Extract and set the environment variables accordingly
+    for line in result.stdout.splitlines():
+        if line.startswith('export'):
+            key, value = line.replace('export ', '').split('=', 1)
+            os.environ[key] = value.strip('"')
+
+    # Build the Docker image
+    command = [
+        "docker", "build", "--tag", name, "--file", dockerfile_path, build_context
+    ]
+    print(command)
+    subprocess.run(command, check=True)
 
 
-def render_template(template: jinja2.Template, context: dict[str, Any]) -> str:
-    """Renders the template by interpolating variables in the context."""
-    return template.render(context)
-
-
-def save_dockerfile(content, output_path: str):
-    """Saves the new generated Dockerfile"""
-    with open(output_path, "w") as file:
-        file.write(content)
-
-
-def generate_pipeline_docker_files(pipelines_file_paths: List[str]) -> None:
-    """Generates base and harness Dockerfiles for every pipeline.
-
-    Args:
-        pipelines_file_paths: List of file paths to pipelines.
-        source_dir: The root directory for the pipelines, which have to be mounted into the
-            harness Dockerfile.
-    """
-    base_template = load_template("Dockerfile.beam")
-    harness_template = load_template("Dockerfile.beam-harness")
-    for pipeline_file_path in pipelines_file_paths:
-        pipeline_name = os.path.splitext(os.path.basename(pipeline_file_path))[0]
-        output_dir = pkg_resources.resource_filename(__name__, f"../deployment/dist/{pipeline_name}")
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-        context = {
-            'SOURCE_DIR': source_dir,
-        }
-        # Render and save base Dockerfile.
-        base_content = render_template(base_template, context)
-        base_file_path = os.path.join(output_dir, f"Dockerfile.{pipeline_name.replace('_', '-')}-beam")
-        save_dockerfile(base_content, base_file_path)
-        # Render and save harness Dockerfile.
-        harness_content = render_template(harness_template, context)
-        harness_file_path = os.path.join(output_dir, f"Dockerfile.{pipeline_name.replace('_', '-')}-beam-harness")
-        save_dockerfile(harness_content, harness_file_path)
-
-
-def build_pipeline_docker_images()
+def build_pipeline_docker_images(build_context: str):
+    """Builds Docker images for each pipeline."""
+    # Build the Beam base image.
+    beam_dockerfile_path = pkg_resources.resource_filename(__name__, "../deployment/docker/Dockerfile.beam")
+    build_docker_image(beam_dockerfile_path, "pypelines-beam:1.16", build_context)
+    # Build the Beam harness base image.
+    beam_harness_base_dockerfile_path = pkg_resources.resource_filename(
+        __name__, "../deployment/docker/Dockerfile.beam-harness-base",
+    )
+    build_docker_image(
+        beam_harness_base_dockerfile_path,
+        "pypelines-beam-harness-base:2.56",
+        pkg_resources.resource_filename(__name__, "..")
+    )
+    # Build the Beam harness image (which is dependent on the harness base image).
+    beam_harness_dockerfile_path = pkg_resources.resource_filename(
+        __name__,
+        "../deployment/docker/Dockerfile.beam-harness",
+    )
+    build_docker_image(
+        beam_harness_dockerfile_path,
+        "pypelines-beam-harness:2.56",
+        build_context,
+    )

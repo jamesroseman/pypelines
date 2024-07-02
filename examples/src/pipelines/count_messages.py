@@ -1,3 +1,5 @@
+import sys
+
 from pypelines.kafka import OTOStatefulPipeline, KafkaSourceConfig, KafkaSinkConfig
 
 class CountMessagesState:
@@ -41,3 +43,8 @@ class CountMessagesPipeline(OTOStatefulPipeline):
             **message,
             "count": state.count,
         }
+
+
+if __name__ == "__main__":
+    pipeline = CountMessagesPipeline()
+    pipeline.run(sys.argv[1:])

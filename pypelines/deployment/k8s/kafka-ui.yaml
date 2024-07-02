@@ -35,11 +35,11 @@ spec:
             - containerPort: 8080
           env:
             - name: KAFKA_CLUSTERS_0_NAME
-              value: demo-cluster
+              value: pypelines-cluster
             - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
-              value: demo-cluster-kafka-bootstrap:9092
+              value: pypelines-cluster-kafka-bootstrap:9092
             - name: KAFKA_CLUSTERS_0_ZOOKEEPER
-              value: demo-cluster-zookeeper-client:2181
+              value: pypelines-cluster-zookeeper-client:2181
           resources:
             requests:
               memory: 256Mi

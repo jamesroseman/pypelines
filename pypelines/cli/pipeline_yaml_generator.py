@@ -32,17 +32,17 @@ def generate_pipeline_yaml_files(pipelines_file_paths: List[str]) -> None:
     Args:
         pipelines_file_paths: List of file paths to pipelines.
     """
-    output_dir = pkg_resources.resource_filename(__name__, "../deployment/dist")
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
     cluster_template = load_template("pipeline-cluster-template.yaml")
     job_template = load_template("pipeline-job-template.yaml")
 
     for pipeline_file_path in pipelines_file_paths:
         pipeline_name = os.path.splitext(os.path.basename(pipeline_file_path))[0]
+        output_dir = pkg_resources.resource_filename(__name__, f"../deployment/dist/{pipeline_name}")
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
         context = {
-            'PIPELINE_NAME': pipeline_name
+            'PIPELINE_NAME': pipeline_name.replace("_", "-"),
+            'PIPELINE_FILE_PATH': pipeline_file_path,
         }
         # Render and save cluster YAML.
         cluster_yaml_content = render_template(cluster_template, context)

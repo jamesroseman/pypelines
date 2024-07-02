@@ -3,7 +3,7 @@ kind: FlinkDeployment
 metadata:
   name: {{PIPELINE_NAME}}-cluster
 spec:
-  image: beam-python-example:1.16
+  image: pypelines-beam:1.16
   imagePullPolicy: Never
   flinkVersion: v1_16
   flinkConfiguration:
@@ -32,7 +32,7 @@ spec:
       spec:
         containers:
           - name: python-harness
-            image: beam-python-harness:2.56.0
+            image: pypelines-harness:2.56.0
             args: ["-worker_pool"]
             ports:
               - containerPort: 50000

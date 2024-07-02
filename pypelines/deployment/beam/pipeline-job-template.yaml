@@ -10,13 +10,11 @@ spec:
     spec:
       containers:
         - name: beam-{{PIPELINE_NAME}}-job
-          image: beam-python-harness:2.56.0
+          image: pypelines-beam-harness:2.56
           command: ["python"]
           args:
-            - "-m"
-            - "word_len.run"
+            - "app/{{PIPELINE_FILE_PATH}}"
             - "--deploy"
-            - "--bootstrap_servers=demo-cluster-kafka-bootstrap:9092"
             - "--runner=FlinkRunner"
             - "--flink_master={{PIPELINE_NAME}}-cluster-rest:8081"
             - "--job_name=beam-{{PIPELINE_NAME}}"
